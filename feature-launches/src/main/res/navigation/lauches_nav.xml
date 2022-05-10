@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/launcListFragment"
+    android:id="@+id/lauches_nav">
+
+    <fragment
+        android:id="@+id/launcListFragment"
+        android:name="com.s4days.feature_launches.data.ui.LaunchListFragment"
+        android:label="launches_fragment"
+        tools:layout="@layout/fragment_launch_list" >
+
+        <deepLink
+            android:autoVerify="true"
+            app:uri="sxl://.*/launches" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/launcInfoFragment"
+        android:name="com.s4days.feature_launches.data.ui.LaunchInfoFragment"
+        android:label="launch_info_fragment"
+        tools:layout="@layout/fragment_launch_info" >
+
+        <deepLink
+            android:autoVerify="true"
+            app:uri="sxl://.*/launchinfo" />
+
+    </fragment>
+
+</navigation>
