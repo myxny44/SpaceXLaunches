@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id "org.jetbrains.kotlin.kapt"
 }
 
 android {
@@ -29,13 +30,31 @@ android {
     }
 }
 
+ext.local_versions = [
+
+        gson            : '2.8.6',
+        room_version    : '2.2.5'
+]
+
+dependencies {
+    implementation project(':module-injector')
+}
+
 dependencies {
 
     implementation "androidx.core:core-ktx:${rootProject.ext.androidX_core}"
     implementation "androidx.appcompat:appcompat:${rootProject.ext.androidX_compat}"
     implementation "com.google.android.material:material:${rootProject.ext.material}"
 
-    implementation "com.google.code.gson:gson:${rootProject.ext.gson}"
+    implementation "com.google.code.gson:gson:${local_versions.gson}"
+
+
+    implementation "com.github.stephanenicolas.toothpick:ktp:${rootProject.ext.toothpick}"
+    kapt "com.github.stephanenicolas.toothpick:toothpick-compiler:${rootProject.ext.toothpick}"
+
+    kapt "androidx.room:room-compiler:${local_versions.room_version}"
+    implementation "androidx.room:room-runtime:${local_versions.room_version}"
+    implementation "androidx.room:room-ktx:${local_versions.room_version}"
 
     testImplementation "junit:junit:${rootProject.ext.junit}"
     androidTestImplementation "androidx.test.ext:junit:${rootProject.ext.test_ext}"

@@ -37,6 +37,7 @@ dependencies {
     implementation project(':module-injector')
     implementation project(':feature-launches')
     implementation project(':core-network')
+    implementation project(':core-database')
 }
 
 dependencies {
