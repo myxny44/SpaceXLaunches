@@ -12,8 +12,7 @@ internal class LaunchesRepositoryImpl(
     private val databaseApi: DatabaseApi
 ): LaunchesRepository {
 
-    override suspend fun getLaunches(): List<SpaceXLaunch>? =
-        networkApi.getLaunches()?.sortedByDescending { it.dateUnix }
+    override suspend fun getLaunches(): List<SpaceXLaunch>? = networkApi.getLaunches()
 
     override suspend fun getFavorites(): List<String> = databaseApi.getLaunches().map { it.launchId }
 

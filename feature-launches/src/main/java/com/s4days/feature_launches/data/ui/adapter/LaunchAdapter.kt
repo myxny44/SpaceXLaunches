@@ -16,9 +16,13 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 internal typealias LaunchInfo = (String) -> Unit
+internal typealias Favorite = (String) -> Unit
+internal typealias IsFavorite = (String) -> Boolean
 
 internal class LaunchAdapter(
-    private val openLaunchInfo: LaunchInfo
+    private val openLaunchInfo: LaunchInfo,
+    private val performFavorite: Favorite,
+    private val isFavorite: IsFavorite
 ) : RecyclerView.Adapter<LaunchAdapter.LaunchViewHolder>() {
 
     private var items = listOf<SpaceXLaunch>()
@@ -44,10 +48,18 @@ internal class LaunchAdapter(
         private val binding = LaunchListItemBinding.bind(itemView)
         fun bind(item: SpaceXLaunch){
             val df = DateFormat.getDateTimeInstance()
+            if (item.id?.let { isFavorite(it) } == true)
+                binding.favorite.setImageResource(R.drawable.ic_fav_checked)
+            else
+                binding.favorite.setImageResource(R.drawable.ic_fav_uncheck)
             binding.name.text = item.name
             binding.date.text = item.dateUnix?.let { df.format(Date(it*1000)) }
             item.links?.patch?.small?.let {
                 Picasso.get().load(it).into(binding.image)
+            }
+
+            binding.favorite.setOnClickListener {
+                item.id?.let { it1 -> performFavorite(it1) }
             }
 
             itemView.setOnClickListener {

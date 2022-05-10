@@ -10,7 +10,7 @@ import com.s4days.core_network.api.NetworkApi
 import com.s4days.core_network.api.NetworkComponentHolder
 import toothpick.config.Module
 
-class AppModule(application: Application): Module() {
+internal class AppModule(application: Application): Module() {
     init {
 
         bind(Application::class.java).toInstance( application )

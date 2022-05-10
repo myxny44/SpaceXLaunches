@@ -32,7 +32,6 @@ android {
 
 ext.local_versions = [
 
-        gson            : '2.8.6',
         room_version    : '2.2.5'
 ]
 
@@ -45,9 +44,6 @@ dependencies {
     implementation "androidx.core:core-ktx:${rootProject.ext.androidX_core}"
     implementation "androidx.appcompat:appcompat:${rootProject.ext.androidX_compat}"
     implementation "com.google.android.material:material:${rootProject.ext.material}"
-
-    implementation "com.google.code.gson:gson:${local_versions.gson}"
-
 
     implementation "com.github.stephanenicolas.toothpick:ktp:${rootProject.ext.toothpick}"
     kapt "com.github.stephanenicolas.toothpick:toothpick-compiler:${rootProject.ext.toothpick}"

@@ -24,7 +24,7 @@ import toothpick.ktp.delegate.inject
 import java.text.DateFormat
 import java.util.*
 
-internal class LaunchInfoFragment: Fragment(R.layout.fragment_launch_info) {
+internal class LaunchInfoFragment : Fragment(R.layout.fragment_launch_info) {
 
     companion object {
         val LAUNCH_ID = "launchId"
@@ -48,7 +48,7 @@ internal class LaunchInfoFragment: Fragment(R.layout.fragment_launch_info) {
 
     }
 
-    private fun initViews(view: View){
+    private fun initViews(view: View) {
         binding = FragmentLaunchInfoBinding.bind(view)
         playerFragment = YouTubePlayerSupportFragmentX.newInstance()
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -66,13 +66,27 @@ internal class LaunchInfoFragment: Fragment(R.layout.fragment_launch_info) {
         ).inject(this)
     }
 
-    private fun setLaunchInfo(launch: SpaceXLaunch){
+    private fun setLaunchInfo(launch: SpaceXLaunch) {
         (requireActivity() as AppCompatActivity).supportActionBar?.title = launch.name
         val df = DateFormat.getDateTimeInstance()
 
         binding.name.text = launch.name
-        binding.date.text = launch.dateUnix?.let { df.format(Date(it*1000)) }
+        binding.date.text = launch.dateUnix?.let { df.format(Date(it * 1000)) }
         binding.details.text = launch.details
+        if (viewModel.favorites.value?.contains(launchId) == true)
+            binding.favorite.setImageResource(R.drawable.ic_fav_checked)
+        else
+            binding.favorite.setImageResource(R.drawable.ic_fav_uncheck)
+
+        binding.favorite.setOnClickListener {
+            if (viewModel.favorites.value?.contains(launchId) == true) {
+                binding.favorite.setImageResource(R.drawable.ic_fav_uncheck)
+                viewModel.deleteFavorite(launchId)
+            } else {
+                binding.favorite.setImageResource(R.drawable.ic_fav_checked)
+                viewModel.addFavorite(launchId)
+            }
+        }
 
         launch.links?.patch?.small?.let {
             Picasso.get().load(it).into(binding.image)
@@ -80,7 +94,7 @@ internal class LaunchInfoFragment: Fragment(R.layout.fragment_launch_info) {
         launch.links?.youtubeId?.let { it1 -> initYoutube(it1) }
     }
 
-    private fun subscribeViewModel(){
+    private fun subscribeViewModel() {
         viewModel.loading.observe(viewLifecycleOwner, Observer {
             if (!it) {
                 viewModel.getLaunchInfo(launchId)?.let { launch ->
@@ -95,24 +109,30 @@ internal class LaunchInfoFragment: Fragment(R.layout.fragment_launch_info) {
         viewModel.getLaunches()
     }
 
-    private fun initYoutube(id: String){
-        playerFragment.initialize(getString(R.string.youtube_api_key), object :YouTubePlayer.OnInitializedListener {
-            override fun onInitializationSuccess(
-                p0: YouTubePlayer.Provider?,
-                p1: YouTubePlayer?,
-                p2: Boolean
-            ) {
-                p1?.cueVideo(id)
-            }
+    private fun initYoutube(id: String) {
+        playerFragment.initialize(
+            getString(R.string.youtube_api_key),
+            object : YouTubePlayer.OnInitializedListener {
+                override fun onInitializationSuccess(
+                    p0: YouTubePlayer.Provider?,
+                    p1: YouTubePlayer?,
+                    p2: Boolean
+                ) {
+                    p1?.cueVideo(id)
+                }
 
-            override fun onInitializationFailure(
-                p0: YouTubePlayer.Provider?,
-                p1: YouTubeInitializationResult?
-            ) {
-                Toast.makeText(requireContext(), "Error initialization YouTube", Toast.LENGTH_LONG).show()
-            }
+                override fun onInitializationFailure(
+                    p0: YouTubePlayer.Provider?,
+                    p1: YouTubeInitializationResult?
+                ) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Error initialization YouTube",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
 
-        })
+            })
     }
 
 }

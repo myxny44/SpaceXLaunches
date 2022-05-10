@@ -1,8 +1,11 @@
 package com.s4days.feature_launches.data.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -15,6 +18,8 @@ import com.s4days.feature_launches.data.ui.LaunchInfoFragment.Companion.LAUNCH_I
 import com.s4days.feature_launches.data.ui.adapter.LaunchAdapter
 import com.s4days.feature_launches.data.ui.viewModel.LaunchesViewModel
 import com.s4days.feature_launches.databinding.FragmentLaunchListBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import toothpick.ktp.KTP
 import toothpick.ktp.delegate.inject
 
@@ -27,7 +32,9 @@ internal class LaunchListFragment : Fragment(R.layout.fragment_launch_list) {
 
     private val adapter by lazy {
         LaunchAdapter(
-            this::openLaunchInfo
+            this::openLaunchInfo,
+            this::favorite,
+            this::isFavorite
         )
     }
 
@@ -38,6 +45,18 @@ internal class LaunchListFragment : Fragment(R.layout.fragment_launch_list) {
         initViews(view)
         subscribeViewModel()
 
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onResume() {
+        super.onResume()
+
+        GlobalScope.launch {
+            viewModel.updateFavorites()
+            requireActivity().runOnUiThread {
+                adapter.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun initDependency() {
@@ -55,6 +74,7 @@ internal class LaunchListFragment : Fragment(R.layout.fragment_launch_list) {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun subscribeViewModel() {
         viewModel.loading.observe(viewLifecycleOwner, Observer {
             binding.refresh.isRefreshing = it
@@ -66,6 +86,7 @@ internal class LaunchListFragment : Fragment(R.layout.fragment_launch_list) {
             if (!it.isNullOrEmpty())
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         })
+        viewModel.favorites.observe(viewLifecycleOwner, Observer { adapter.notifyDataSetChanged() })
         viewModel.getLaunches()
     }
 
@@ -73,6 +94,17 @@ internal class LaunchListFragment : Fragment(R.layout.fragment_launch_list) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.deeplink_scheme) + "launchinfo")).apply {
             putExtra(LAUNCH_ID, id)
         })
+    }
+
+    private fun favorite(id: String){
+        if (isFavorite(id))
+            viewModel.deleteFavorite(id)
+        else
+            viewModel.addFavorite(id)
+    }
+
+    private fun isFavorite(id: String): Boolean{
+        return viewModel.favorites.value?.contains(id) == true
     }
 
 }

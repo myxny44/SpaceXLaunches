@@ -11,9 +11,8 @@ object DatabaseComponentHolder: ComponentHolder<DatabaseApi, DatabaseModule> {
     private val api: DatabaseApi by inject()
 
     override fun init(rootScope: Any) {
-        if (KTP.isScopeOpen(rootScope))
+        if (KTP.isScopeOpen(this))
             return
-
         KTP.openScope(rootScope).apply {
             installModules(DatabaseModule(rootScope as Context))
         }.inject(this)

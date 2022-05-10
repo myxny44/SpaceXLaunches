@@ -3,14 +3,11 @@ package com.s4days.feature_launches.data.ui.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.s4days.core_database.api.DatabaseApi
-import com.s4days.core_database.data.entity.FavoriteLaunch
 import com.s4days.core_network.data.model.SpaceXLaunch
 import com.s4days.feature_launches.data.repository.LaunchesRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import toothpick.InjectConstructor
-import java.lang.Exception
 
 @InjectConstructor
 internal class LaunchesViewModel(
@@ -26,7 +23,7 @@ internal class LaunchesViewModel(
     fun getLaunches(){
         GlobalScope.launch {
             try {
-                favorites.postValue(launchesRepository.getFavorites())
+                updateFavorites()
                 launches.postValue(launchesRepository.getLaunches())
             } catch (e: Exception) {
                 error.postValue(e.message)
@@ -49,6 +46,10 @@ internal class LaunchesViewModel(
             launchesRepository.deleteFavorites(launch)
             favorites.postValue(launchesRepository.getFavorites())
         }
+    }
+
+    suspend fun updateFavorites(){
+        favorites.postValue(launchesRepository.getFavorites())
     }
 
 }

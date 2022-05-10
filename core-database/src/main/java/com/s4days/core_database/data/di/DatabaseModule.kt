@@ -13,12 +13,16 @@ import javax.inject.Singleton
 
 @Singleton
 @InjectConstructor
-internal class DatabaseModule(context: Context): Module() {
+internal class DatabaseModule(context: Context) : Module() {
     init {
         bind(Context::class.java).toInstance(context)
 
         val favoritesDatabase = Room
-            .databaseBuilder(context.applicationContext, SpaceXLaunchDatabase::class.java, "SpaceXLaunchDatabase.db")
+            .databaseBuilder(
+                context.applicationContext,
+                SpaceXLaunchDatabase::class.java,
+                "SpaceXLaunchDatabase.db"
+            )
             .build()
 
         bind(FavoriteRepository::class.java).to(FavoriteRepositoryImpl::class.java).singleton()
