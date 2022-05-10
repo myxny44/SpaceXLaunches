@@ -9,6 +9,7 @@ internal class LaunchesRepositoryImpl(
     private val networkApi: NetworkApi
 ): LaunchesRepository {
 
-    override suspend fun getLaunches(): List<SpaceXLaunch>? = networkApi.getLaunches()
+    override suspend fun getLaunches(): List<SpaceXLaunch>? =
+        networkApi.getLaunches()?.sortedByDescending { it.dateUnix }
 
 }

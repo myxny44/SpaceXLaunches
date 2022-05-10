@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.s4days.feature_launches.R
 import com.s4days.feature_launches.data.di.LaunchesModule
+import com.s4days.feature_launches.data.ui.LaunchInfoFragment.Companion.LAUNCH_ID
 import com.s4days.feature_launches.data.ui.adapter.LaunchAdapter
 import com.s4days.feature_launches.data.ui.viewModel.LaunchesViewModel
 import com.s4days.feature_launches.databinding.FragmentLaunchListBinding
@@ -48,10 +49,15 @@ internal class LaunchListFragment : Fragment(R.layout.fragment_launch_list) {
     private fun initViews(rootView: View) {
         binding = FragmentLaunchListBinding.bind(rootView)
         binding.launchList.adapter = adapter
+
+        binding.refresh.setOnRefreshListener {
+            viewModel.getLaunches()
+        }
     }
 
     private fun subscribeViewModel() {
         viewModel.loading.observe(viewLifecycleOwner, Observer {
+            binding.refresh.isRefreshing = it
             if (!it) {
                 viewModel.launches.value?.let { it1 -> adapter.updateList(it1) }
             }
@@ -64,8 +70,9 @@ internal class LaunchListFragment : Fragment(R.layout.fragment_launch_list) {
     }
 
     private fun openLaunchInfo(id: String){
-        viewModel.error.postValue("testsss")
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("sxl://localhost/launchinfo")))
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.deeplink_scheme) + "launchinfo")).apply {
+            putExtra(LAUNCH_ID, id)
+        })
     }
 
 }
