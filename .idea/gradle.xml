@@ -18,7 +18,6 @@
             <option value="$PROJECT_DIR$/module-injector" />
           </set>
         </option>
-        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

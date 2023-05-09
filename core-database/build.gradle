@@ -32,7 +32,7 @@ android {
 
 ext.local_versions = [
 
-        room_version    : '2.2.5'
+        room_version    : '2.4.0-alpha03'
 ]
 
 dependencies {
